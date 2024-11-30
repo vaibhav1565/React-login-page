@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Form</title>
+
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+    ></script>
+    <!-- Babel for JSX support -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <style>
+      /* Basic styling and animation for rainbow background */
+      body {
+        background-color: white;
+        color: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(
+          45deg,
+          #ff0000,
+          #ff7300,
+          #fffb00,
+          #00ff00,
+          #007fff,
+          #8a2be2,
+          #ff1493
+        );
+        background-size: 400% 400%;
+        animation: rainbow 10s ease infinite;
+      }
+
+      @keyframes rainbow {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      /* Login form container styling */
+      .login-container {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+      }
+
+      h2 {
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      input[type="checkbox"] {
+        margin-right: 8px;
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+      }
+
+      p {
+        margin-top: 20px;
+        font-size: 14px;
+      }
+
+      .toggle-btn {
+        background-color: transparent;
+        color: #4caf50;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState } = React;
+
+      function UserForm() {
+        // States to manage form inputs and flags
+        const [isSignIn, setIsSignIn] = useState(true);
+        const [isSubmitting, setIsSubmitting] = useState(false);
+
+        const [name, setName] = useState("");
+        const [username, setUsername] = useState("");
+        const [password, setPassword] = useState("");
+        const [showPassword, setShowPassword] = useState(false);
+        const [message, setMessage] = useState("");
+
+        // Toggles between Sign In and Sign Up
+        const toggleForm = () => {
+          setIsSignIn(!isSignIn);
+          setMessage("");
+        };
+
+        // Handles form submission
+        const handleSubmit = (e) => {
+          e.preventDefault();
+
+          // Regex to validate password complexity (min 8 characters, consisting of 1 digit, 1 lowercase, 1 uppercase)
+          const passwordRegex =
+            /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
+
+          // Check if username and password are entered
+          if (!username || !password || (!isSignIn && !name)) {
+            setMessage("Please enter all fields.");
+          } else if (!passwordRegex.test(password)) {
+            // Check if the password matches the regex
+            setMessage(
+              "Password must be at least 8 characters, consisting of atleast 1 number, 1 lowercase character and 1 uppercase character."
+            );
+          } else {
+            // Handle Sign In
+            if (isSignIn) {
+              const users = JSON.parse(localStorage.getItem("users")) || [];
+
+              // Check if username exists and password matches
+              const user = users.find(
+                (user) =>
+                  user.username === username && user.password === password
+              );
+              if (user) {
+                setIsSubmitting(true);
+                setTimeout(() => {
+                  setMessage(`Successfully logged in as ${username}`);
+                }, 1000);
+                setTimeout(() => {
+                  window.location.href = "index.html";
+                }, 2000);
+              } else {
+                setMessage("Invalid username or password.");
+              }
+            }
+            // Handle Sign Up
+            else {
+              const users = JSON.parse(localStorage.getItem("users")) || [];
+
+              // Check if the username already exists
+              const existingUser = users.find(
+                (user) => user.username === username
+              );
+              if (existingUser) {
+                setMessage("Username already exists.");
+              } else {
+                // Add the new user to the users array and store it in localStorage
+                setIsSubmitting(true);
+                setTimeout(() => {
+                  users.push({ username, password, name });
+                  localStorage.setItem("users", JSON.stringify(users));
+                  setMessage(`Successfully signed up as ${username}`);
+                }, 1000);
+                setTimeout(() => {
+                  window.location.href = "index.html";
+                }, 2000);
+              }
+            }
+          }
+        };
+
+        // Set message color based on login status (black for successful, red for error)
+        const messageColor = message.startsWith("Successfully")
+          ? "black"
+          : "red";
+
+        return (
+          <div className="login-container">
+            <h2>{isSignIn ? "Sign In" : "Sign Up"}</h2>
+
+            {/* Input for name */}
+            {!isSignIn && (
+              <input
+                type="text"
+                placeholder="Full Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            )}
+
+            {/* Input for username */}
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+
+            {/* Input for password with show/hide functionality */}
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            {/* Checkbox to toggle password visibility */}
+            <label>
+              <input
+                type="checkbox"
+                checked={showPassword}
+                onChange={() => setShowPassword(!showPassword)}
+              />{" "}
+              Show Password
+            </label>
+
+            <br />
+
+            {/* Submit button */}
+            <button onClick={handleSubmit}>
+              {!isSubmitting
+                ? isSignIn
+                  ? "Sign In"
+                  : "Sign Up"
+                : isSignIn
+                ? "Signing in.."
+                : "Signing up..."}
+            </button>
+
+            {/* Toggle between Sign In and Sign Up */}
+            <p>
+              {isSignIn
+                ? "Don't have an account? "
+                : "Already have an account? "}
+              <button className="toggle-btn" onClick={toggleForm}>
+                {isSignIn ? "Sign Up" : "Sign In"}
+              </button>
+            </p>
+
+            {/* Display message */}
+            <div>
+              <p
+                style={{
+                  color: messageColor,
+                  height: "32px",
+                }}
+              >
+                {message || " "}
+              </p>
+            </div>
+          </div>
+        );
+      }
+
+      // Create the React root and render the LoginForm component
+      const root = ReactDOM.createRoot(document.querySelector("#root"));
+      root.render(<UserForm />);
+    </script>
+  </body>
+</html>
