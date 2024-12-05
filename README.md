@@ -1,1 +1,1 @@
-HTML Login page utilising React
+An HTML Login page utilising ReactJS
