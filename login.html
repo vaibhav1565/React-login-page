@@ -5,17 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login Form</title>
 
+    <!-- Babel for JSX support -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script
+      defer
       crossorigin
       src="https://unpkg.com/react@18/umd/react.development.js"
     ></script>
     <script
+      defer
       crossorigin
       src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
     ></script>
-    <!-- Babel for JSX support -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
+
     <style>
       /* Basic styling and animation for rainbow background */
       body {
@@ -109,7 +111,7 @@
     </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">Not rendered</div>
 
     <script type="text/babel">
       const { useState } = React;
